@@ -67,15 +67,13 @@
                     </button>
 
                     <!-- Botão de Perfil do Usuário -->
-                    <!-- A bolinha verde aparece quando o usuário está logado -->
-                    <button onclick="toggleUserPanel()" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                    <button id="user-panel-button" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
                         <i data-lucide="user" class="w-5 h-5"></i>
                         <span id="user-status-indicator" class="absolute -top-1 -right-1 bg-green-500 rounded-full h-2 w-2 hidden"></span>
                     </button>
 
                     <!-- Botão do Carrinho de Compras -->
-                    <!-- O número mostra quantos itens estão no carrinho -->
-                    <button onclick="toggleCart()" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                    <button id="cart-button" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
                         <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-red-800 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
                     </button>
@@ -121,7 +119,7 @@
             <!-- Cabeçalho do Carrinho -->
             <div class="flex items-center justify-between p-6 border-b border-border">
                 <h2 class="text-lg font-semibold">Carrinho de Compras</h2>
-                <button onclick="toggleCart()" class="p-2 hover:bg-muted rounded-lg">
+                <button id="cart-close-button" class="p-2 hover:bg-muted rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -154,7 +152,7 @@
             <!-- Cabeçalho do Painel de Perfil -->
             <div class="flex items-center justify-between p-6 border-b border-border">
                 <h2 class="text-lg font-semibold">Meu Perfil</h2>
-                <button onclick="toggleUserPanel()" class="p-2 hover:bg-muted rounded-lg">
+                <button id="user-panel-close-button" class="p-2 hover:bg-muted rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -238,10 +236,10 @@
     <!-- Fundo escuro que aparece quando os painéis laterais estão abertos -->
     
     <!-- Overlay para o carrinho -->
-    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleCart()"></div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
     
     <!-- Overlay para o painel de usuário -->
-    <div id="user-panel-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleUserPanel()"></div>
+    <div id="user-panel-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
 
     <!-- ============================================ -->
     <!-- SCRIPTS JAVASCRIPT -->

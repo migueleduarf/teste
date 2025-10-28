@@ -693,6 +693,10 @@ function init() {
   console.log('🚀 Iniciando Apple Juice...');
   
   try {
+    // Anexa os event listeners aos elementos da UI
+    console.log('🔗 Anexando event listeners...');
+    initializeEventListeners();
+
     // Carrega as configurações e renderiza o conteúdo
     console.log('📋 Carregando tema...');
     loadTheme();
@@ -2427,36 +2431,72 @@ function scrollToCategories() {
 /* ============================================ */
 
 /**
+ * Anexa os event listeners aos elementos de UI interativos
+ */
+function initializeEventListeners() {
+  // Botão para abrir o painel do usuário
+  const userPanelButton = document.getElementById('user-panel-button');
+  if (userPanelButton) {
+    userPanelButton.addEventListener('click', () => toggleUserPanel());
+  }
+
+  // Botão para fechar o painel do usuário
+  const userPanelCloseButton = document.getElementById('user-panel-close-button');
+  if (userPanelCloseButton) {
+    userPanelCloseButton.addEventListener('click', () => toggleUserPanel());
+  }
+
+  // Botão para abrir o carrinho
+  const cartButton = document.getElementById('cart-button');
+  if (cartButton) {
+    cartButton.addEventListener('click', () => toggleCart());
+  }
+
+  // Botão para fechar o carrinho
+  const cartCloseButton = document.getElementById('cart-close-button');
+  if (cartCloseButton) {
+    cartCloseButton.addEventListener('click', () => toggleCart());
+  }
+
+  // Overlay do carrinho (clicar fora fecha o painel)
+  const cartOverlay = document.getElementById('cart-overlay');
+  if (cartOverlay) {
+    cartOverlay.addEventListener('click', () => toggleCart(false));
+  }
+
+  // Overlay do painel de usuário (clicar fora fecha o painel)
+  const userPanelOverlay = document.getElementById('user-panel-overlay');
+  if (userPanelOverlay) {
+    userPanelOverlay.addEventListener('click', () => toggleUserPanel(false));
+  }
+}
+
+/**
  * Alterna a exibição do carrinho de compras (sidebar)
  * @param {boolean} forceState - Se fornecido, força o estado (true = abrir, false = fechar)
  */
 function toggleCart(forceState) {
   const sidebar = document.getElementById('cart-sidebar');
   const overlay = document.getElementById('cart-overlay');
-  
-  if (!sidebar || !overlay) {
-    console.error('Cart sidebar ou overlay não encontrados');
-    return;
-  }
-  
-  // Fecha o painel de usuário se estiver aberto
-  const userPanel = document.getElementById('user-panel');
-  const userOverlay = document.getElementById('user-panel-overlay');
-  if (userPanel && !userPanel.classList.contains('translate-x-full')) {
-    userPanel.classList.add('translate-x-full');
-    if (userOverlay) userOverlay.classList.add('hidden');
-  }
-  
-  if (forceState === true || (forceState === undefined && sidebar.classList.contains('translate-x-full'))) {
-    // Abrir carrinho
+  if (!sidebar || !overlay) return;
+
+  const isOpen = !sidebar.classList.contains('translate-x-full');
+  const shouldOpen = forceState === undefined ? !isOpen : forceState;
+
+  if (shouldOpen) {
+    // Se for para abrir o carrinho, garante que o painel de usuário esteja fechado
+    toggleUserPanel(false);
     sidebar.classList.remove('translate-x-full');
     overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Previne scroll do body
-  } else if (forceState === false || forceState === undefined) {
-    // Fechar carrinho
+    document.body.style.overflow = 'hidden';
+  } else {
     sidebar.classList.add('translate-x-full');
     overlay.classList.add('hidden');
-    document.body.style.overflow = ''; // Restaura scroll do body
+    // Só restaura o scroll se o outro painel também estiver fechado
+    const userPanel = document.getElementById('user-panel');
+    if (userPanel && userPanel.classList.contains('translate-x-full')) {
+      document.body.style.overflow = '';
+    }
   }
 }
 
@@ -2467,31 +2507,26 @@ function toggleCart(forceState) {
 function toggleUserPanel(forceState) {
   const sidebar = document.getElementById('user-panel');
   const overlay = document.getElementById('user-panel-overlay');
-  
-  if (!sidebar || !overlay) {
-    console.error('User panel ou overlay não encontrados');
-    return;
-  }
-  
-  // Fecha o carrinho se estiver aberto
-  const cartSidebar = document.getElementById('cart-sidebar');
-  const cartOverlay = document.getElementById('cart-overlay');
-  if (cartSidebar && !cartSidebar.classList.contains('translate-x-full')) {
-    cartSidebar.classList.add('translate-x-full');
-    if (cartOverlay) cartOverlay.classList.add('hidden');
-  }
-  
-  if (forceState === true || (forceState === undefined && sidebar.classList.contains('translate-x-full'))) {
-    // Abrir painel de usuário
+  if (!sidebar || !overlay) return;
+
+  const isOpen = !sidebar.classList.contains('translate-x-full');
+  const shouldOpen = forceState === undefined ? !isOpen : forceState;
+
+  if (shouldOpen) {
+    // Se for para abrir o painel de usuário, garante que o carrinho esteja fechado
+    toggleCart(false);
     sidebar.classList.remove('translate-x-full');
     overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Previne scroll do body
-    updateUserPanel(); // Atualiza o conteúdo do painel
-  } else if (forceState === false || forceState === undefined) {
-    // Fechar painel de usuário
+    document.body.style.overflow = 'hidden';
+    updateUserPanel();
+  } else {
     sidebar.classList.add('translate-x-full');
     overlay.classList.add('hidden');
-    document.body.style.overflow = ''; // Restaura scroll do body
+    // Só restaura o scroll se o outro painel também estiver fechado
+    const cartSidebar = document.getElementById('cart-sidebar');
+    if (cartSidebar && cartSidebar.classList.contains('translate-x-full')) {
+      document.body.style.overflow = '';
+    }
   }
 }
 
@@ -2651,99 +2686,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('🔄 Event listener DOMContentLoaded registrado!');
-
-/* ============================================ */
-/* EXPOSIÇÃO DAS FUNÇÕES NO ESCOPO GLOBAL */
-/* ============================================ */
-/*
- * IMPORTANTE: Estas linhas disponibilizam as funções principais
- * no objeto window IMEDIATAMENTE quando o script carrega.
- * 
- * Isso garante que os onclick="" no HTML funcionem corretamente,
- * pois as funções já existem no escopo global quando a página carrega.
- * 
- * NOTA: Este bloco está NO FINAL do arquivo para garantir que
- * todas as funções já foram definidas antes de serem expostas.
- */
-
-console.log('📦 Disponibilizando TODAS as funções no escopo global...');
-
-// ===== FUNÇÕES DE UI - PAINÉIS E MODAIS =====
-window.toggleCart = toggleCart;
-window.toggleUserPanel = toggleUserPanel;
-window.toggleMobileMenu = toggleMobileMenu;
-window.toggleTheme = toggleTheme;
-window.toggleLogin = toggleLogin;
-window.closeMobileMenu = closeMobileMenu;
-
-// ===== FUNÇÕES DE NAVEGAÇÃO E BUSCA =====
-window.navigateTo = navigateTo;
-window.handleSearch = handleSearch;
-
-// ===== FUNÇÕES DO CARRINHO (CRÍTICAS!) =====
-window.addToCart = addToCart;
-window.removeFromCart = removeFromCart;
-window.updateQuantity = updateQuantity;
-
-// ===== FUNÇÕES DE AUTENTICAÇÃO =====
-window.handleLogin = handleLogin;
-window.handleRegister = handleRegister;
-window.handleLogout = handleLogout;
-window.showRegisterPanel = showRegisterPanel;
-
-// ===== FUNÇÕES DE PRODUTOS =====
-window.closeProductModal = closeProductModal;
-window.openProductModal = openProductModal;
-window.toggleFavorite = toggleFavorite;
-window.renderProductCard = renderProductCard;
-
-// ===== FUNÇÕES DE CHECKOUT E USUÁRIO =====
-window.handleCheckout = handleCheckout;
-window.updateUserPanel = updateUserPanel;
-window.showUserOrders = showUserOrders;
-window.showUserFavorites = showUserFavorites;
-window.showUserSettings = showUserSettings;
-window.showUserAddress = showUserAddress;
-window.showUserHelp = showUserHelp;
-
-// ===== FUNÇÕES DE NEWSLETTER E SCROLL =====
-window.subscribeNewsletter = subscribeNewsletter;
-window.scrollToProducts = scrollToProducts;
-window.scrollToNewsletter = scrollToNewsletter;
-window.scrollToCategories = scrollToCategories;
-
-// ===== FUNÇÕES AUXILIARES =====
-window.processCheckout = processCheckout;
-
-console.log('✅ TODAS as funções disponibilizadas no escopo global!');
-
-// Log de debug para verificar se as funções foram realmente expostas
-console.log('🔍 Verificando funções expostas:');
-console.log('  - window.toggleCart:', typeof window.toggleCart);
-console.log('  - window.addToCart:', typeof window.addToCart);
-console.log('  - window.removeFromCart:', typeof window.removeFromCart);
-console.log('  - window.updateQuantity:', typeof window.updateQuantity);
-console.log('  - window.handleLogin:', typeof window.handleLogin);
-console.log('  - window.handleLogout:', typeof window.handleLogout);
-console.log('  - window.handleCheckout:', typeof window.handleCheckout);
-console.log('  - window.showRegisterPanel:', typeof window.showRegisterPanel);
-console.log('  - window.closeMobileMenu:', typeof window.closeMobileMenu);
-
-// Verifica se há funções indefinidas
-const functionsToCheck = [
-  'toggleCart', 'toggleUserPanel', 'toggleMobileMenu', 'toggleTheme', 'toggleLogin', 'closeMobileMenu',
-  'navigateTo', 'handleSearch',
-  'addToCart', 'removeFromCart', 'updateQuantity',
-  'handleLogin', 'handleRegister', 'handleLogout', 'showRegisterPanel',
-  'closeProductModal', 'openProductModal', 'toggleFavorite', 'renderProductCard',
-  'handleCheckout', 'updateUserPanel', 'showUserOrders', 'showUserFavorites', 'showUserSettings', 'showUserAddress', 'showUserHelp',
-  'subscribeNewsletter', 'scrollToProducts', 'scrollToNewsletter', 'scrollToCategories',
-  'processCheckout'
-];
-
-const undefinedFunctions = functionsToCheck.filter(fn => typeof window[fn] === 'undefined');
-if (undefinedFunctions.length > 0) {
-  console.error('⚠️ ATENÇÃO: As seguintes funções não foram definidas:', undefinedFunctions);
-} else {
-  console.log('✅ Todas as funções foram definidas corretamente!');
-}
