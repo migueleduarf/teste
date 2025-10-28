@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Juice - E-commerce de Tecnologia</title>
+    <meta name="description" content="Sua loja especializada em peças de PC, gaming, home office e acessórios tecnológicos.">
+    
+    <!-- Ícone da página (emoji de maçã) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>">
+    
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Biblioteca de Ícones Lucide -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-background">
+
+    <!-- ============================================ -->
+    <!-- CABEÇALHO DO SITE (HEADER) -->
+    <!-- ============================================ -->
+    <header id="header" class="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo da Apple Juice -->
+                <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                    <div class="bg-red-800 text-white p-2 rounded-lg mr-3">
+                        <i data-lucide="apple" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-bold text-foreground">Apple Juice</span>
+                </div>
+
+                <!-- Menu de Navegação Desktop (escondido em mobile) -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" onclick="navigateTo('home')" class="nav-link">Início</a>
+                    <a href="#" onclick="navigateTo('gaming')" class="nav-link">Gaming</a>
+                    <a href="#" onclick="navigateTo('home-office')" class="nav-link">Home Office</a>
+                    <a href="#" onclick="navigateTo('professional')" class="nav-link">Profissional</a>
+                    <a href="#" onclick="navigateTo('accessories')" class="nav-link">Acessórios</a>
+                    <a href="#" onclick="navigateTo('peripherals')" class="nav-link">Periféricos</a>
+                    <a href="#" onclick="navigateTo('components')" class="nav-link">Componentes</a>
+                    <a href="#" onclick="navigateTo('promotions')" class="nav-link">Promoções</a>
+                </nav>
+
+                <!-- Campo de Busca (visível apenas em telas grandes) -->
+                <div class="hidden lg:flex items-center max-w-md mx-4 flex-1">
+                    <div class="relative w-full">
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="Buscar produtos..." 
+                            class="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-800"
+                            onkeyup="handleSearch(this.value)"
+                        >
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação (Tema, Usuário, Carrinho, Menu Mobile) -->
+                <div class="flex items-center space-x-4">
+                    
+                    <!-- Botão de Alternância de Tema (Claro/Escuro) -->
+                    <button onclick="toggleTheme()" class="p-2 text-muted-foreground hover:text-foreground transition-colors">
+                        <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- Botão de Perfil do Usuário -->
+                    <!-- A bolinha verde aparece quando o usuário está logado -->
+                    <button onclick="toggleUserPanel()" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <span id="user-status-indicator" class="absolute -top-1 -right-1 bg-green-500 rounded-full h-2 w-2 hidden"></span>
+                    </button>
+
+                    <!-- Botão do Carrinho de Compras -->
+                    <!-- O número mostra quantos itens estão no carrinho -->
+                    <button onclick="toggleCart()" class="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-800 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+
+                    <!-- Botão Menu Mobile (visível apenas em telas pequenas) -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-muted-foreground hover:text-foreground">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menu Mobile (escondido por padrão) -->
+            <div id="mobile-menu" class="md:hidden hidden border-t border-border">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#" onclick="navigateTo('home')" class="block nav-link-mobile">Início</a>
+                    <a href="#" onclick="navigateTo('gaming')" class="block nav-link-mobile">Gaming</a>
+                    <a href="#" onclick="navigateTo('home-office')" class="block nav-link-mobile">Home Office</a>
+                    <a href="#" onclick="navigateTo('professional')" class="block nav-link-mobile">Profissional</a>
+                    <a href="#" onclick="navigateTo('accessories')" class="block nav-link-mobile">Acessórios</a>
+                    <a href="#" onclick="navigateTo('peripherals')" class="block nav-link-mobile">Periféricos</a>
+                    <a href="#" onclick="navigateTo('components')" class="block nav-link-mobile">Componentes</a>
+                    <a href="#" onclick="navigateTo('promotions')" class="block nav-link-mobile">Promoções</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- CONTEÚDO PRINCIPAL DA PÁGINA -->
+    <!-- ============================================ -->
+    <!-- Todo o conteúdo será carregado dinamicamente aqui pelo JavaScript -->
+    <main id="main-content">
+        <!-- O JavaScript irá preencher este espaço com o conteúdo da página -->
+    </main>
+
+    <!-- ============================================ -->
+    <!-- PAINEL LATERAL DO CARRINHO DE COMPRAS -->
+    <!-- ============================================ -->
+    <!-- Este painel desliza da direita quando o usuário clica no ícone do carrinho -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-background border-l border-border transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex flex-col h-full">
+            
+            <!-- Cabeçalho do Carrinho -->
+            <div class="flex items-center justify-between p-6 border-b border-border">
+                <h2 class="text-lg font-semibold">Carrinho de Compras</h2>
+                <button onclick="toggleCart()" class="p-2 hover:bg-muted rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- Lista de Itens do Carrinho -->
+            <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+                <!-- Os itens do carrinho serão adicionados aqui pelo JavaScript -->
+            </div>
+            
+            <!-- Rodapé com Total e Botão de Finalizar -->
+            <div class="border-t border-border p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-semibold">Total:</span>
+                    <span id="cart-total" class="font-bold text-xl text-red-800">R$ 0,00</span>
+                </div>
+                <button onclick="navigateTo('checkout')" class="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg transition-colors">
+                    Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PAINEL LATERAL DO PERFIL DO USUÁRIO -->
+    <!-- ============================================ -->
+    <!-- Este painel desliza da direita quando o usuário clica no ícone de perfil -->
+    <div id="user-panel" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-background border-l border-border transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex flex-col h-full">
+            
+            <!-- Cabeçalho do Painel de Perfil -->
+            <div class="flex items-center justify-between p-6 border-b border-border">
+                <h2 class="text-lg font-semibold">Meu Perfil</h2>
+                <button onclick="toggleUserPanel()" class="p-2 hover:bg-muted rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- Conteúdo do Painel -->
+            <!-- O JavaScript irá preencher com login, pedidos, favoritos, etc -->
+            <div id="user-panel-content" class="flex-1 overflow-y-auto p-6">
+                <!-- O conteúdo será carregado dinamicamente pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL DE LOGIN (atualmente não usado) -->
+    <!-- ============================================ -->
+    <!-- Este modal está disponível mas o login principal está no painel lateral -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-background rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold">Login</h2>
+                <button onclick="toggleLogin()" class="p-2 hover:bg-muted rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">E-mail</label>
+                        <input type="email" id="login-email" required class="w-full p-3 border border-border rounded-lg bg-background">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Senha</label>
+                        <input type="password" id="login-password" required class="w-full p-3 border border-border rounded-lg bg-background">
+                    </div>
+                    <button type="submit" class="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg transition-colors">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <p class="text-sm text-muted-foreground">
+                    Não tem conta? 
+                    <button onclick="showRegister()" class="text-red-800 hover:underline">Registre-se</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL DE DETALHES DO PRODUTO -->
+    <!-- ============================================ -->
+    <!-- Abre quando o usuário clica em um produto para ver mais detalhes -->
+    <div id="product-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-background rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="product-modal-title" class="text-xl font-semibold"></h2>
+                <button onclick="closeProductModal()" class="p-2 hover:bg-muted rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div id="product-modal-content">
+                <!-- Os detalhes do produto serão carregados aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CONTAINER PARA NOTIFICAÇÕES TOAST -->
+    <!-- ============================================ -->
+    <!-- Mensagens de sucesso, erro, etc aparecem aqui no canto superior direito -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- As notificações serão adicionadas aqui dinamicamente -->
+    </div>
+
+    <!-- ============================================ -->
+    <!-- OVERLAYS (FUNDOS ESCUROS) -->
+    <!-- ============================================ -->
+    <!-- Fundo escuro que aparece quando os painéis laterais estão abertos -->
+    
+    <!-- Overlay para o carrinho -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleCart()"></div>
+    
+    <!-- Overlay para o painel de usuário -->
+    <div id="user-panel-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleUserPanel()"></div>
+
+    <!-- ============================================ -->
+    <!-- SCRIPTS JAVASCRIPT -->
+    <!-- ============================================ -->
+    <script src="script.js"></script>
+</body>
+</html>
