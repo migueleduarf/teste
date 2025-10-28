@@ -693,10 +693,6 @@ function init() {
   console.log('🚀 Iniciando Apple Juice...');
   
   try {
-    // Anexa os event listeners aos elementos da UI
-    console.log('🔗 Anexando event listeners...');
-    initializeEventListeners();
-
     // Carrega as configurações e renderiza o conteúdo
     console.log('📋 Carregando tema...');
     loadTheme();
@@ -710,6 +706,10 @@ function init() {
     console.log('🎨 Renderizando página...');
     renderPage();
     
+    // Anexa os event listeners aos elementos da UI
+    console.log('🔗 Anexando event listeners...');
+    initializeEventListeners();
+
     console.log('⏰ Iniciando timer de promoções...');
     startPromoTimer();
     
