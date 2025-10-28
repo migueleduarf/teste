@@ -794,7 +794,6 @@ function applyTheme() {
       lucide.createIcons();
     }
   }
-  showToast(`Tema alterado para ${newTheme === 'dark' ? 'escuro' : 'claro'}`, 'info');
 }
 
 // Navigation
@@ -2382,7 +2381,7 @@ function showToast(message, type = 'info') {
   // Use a short timeout to allow the element to be added to the DOM before adding the 'show' class
   setTimeout(() => {
     toast.classList.add('show');
-  }, 10);
+  }, 500);
   
   // Auto remove after 5 seconds
   setTimeout(() => {
@@ -2531,6 +2530,7 @@ function toggleTheme() {
       lucide.createIcons();
     }
   }
+  showToast(`Tema alterado para ${newTheme === 'dark' ? 'escuro' : 'claro'}`, 'info');
 }
 
 /**
