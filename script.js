@@ -2675,13 +2675,6 @@ function closeMobileMenu() {
 }
 
 /**
- * Mostra o painel de registro (alias para showRegisterPanel)
- */
-function showRegister() {
-  showRegisterPanel();
-}
-
-/**
  * Processa o login do usuário
  */
 function handleLogin(event) {
@@ -2799,7 +2792,7 @@ window.updateQuantity = updateQuantity;
 window.handleLogin = handleLogin;
 window.handleRegister = handleRegister;
 window.handleLogout = handleLogout;
-window.showRegister = showRegister;
+window.showRegisterPanel = showRegisterPanel;
 
 // ===== FUNÇÕES DE PRODUTOS =====
 window.closeProductModal = closeProductModal;
@@ -2815,7 +2808,6 @@ window.showUserFavorites = showUserFavorites;
 window.showUserSettings = showUserSettings;
 window.showUserAddress = showUserAddress;
 window.showUserHelp = showUserHelp;
-window.showRegisterPanel = showRegisterPanel;
 
 // ===== FUNÇÕES DE NEWSLETTER E SCROLL =====
 window.subscribeNewsletter = subscribeNewsletter;
@@ -2834,3 +2826,27 @@ console.log('  - window.toggleCart:', typeof window.toggleCart);
 console.log('  - window.addToCart:', typeof window.addToCart);
 console.log('  - window.removeFromCart:', typeof window.removeFromCart);
 console.log('  - window.updateQuantity:', typeof window.updateQuantity);
+console.log('  - window.handleLogin:', typeof window.handleLogin);
+console.log('  - window.handleLogout:', typeof window.handleLogout);
+console.log('  - window.handleCheckout:', typeof window.handleCheckout);
+console.log('  - window.showRegisterPanel:', typeof window.showRegisterPanel);
+console.log('  - window.closeMobileMenu:', typeof window.closeMobileMenu);
+
+// Verifica se há funções indefinidas
+const functionsToCheck = [
+  'toggleCart', 'toggleUserPanel', 'toggleMobileMenu', 'toggleTheme', 'toggleLogin', 'closeMobileMenu',
+  'navigateTo', 'handleSearch',
+  'addToCart', 'removeFromCart', 'updateQuantity',
+  'handleLogin', 'handleRegister', 'handleLogout', 'showRegisterPanel',
+  'closeProductModal', 'openProductModal', 'toggleFavorite', 'renderProductCard',
+  'handleCheckout', 'updateUserPanel', 'showUserOrders', 'showUserFavorites', 'showUserSettings', 'showUserAddress', 'showUserHelp',
+  'subscribeNewsletter', 'scrollToProducts', 'scrollToNewsletter', 'scrollToCategories',
+  'processCheckout'
+];
+
+const undefinedFunctions = functionsToCheck.filter(fn => typeof window[fn] === 'undefined');
+if (undefinedFunctions.length > 0) {
+  console.error('⚠️ ATENÇÃO: As seguintes funções não foram definidas:', undefinedFunctions);
+} else {
+  console.log('✅ Todas as funções foram definidas corretamente!');
+}
