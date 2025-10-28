@@ -780,13 +780,6 @@ function loadTheme() {
   applyTheme();
 }
 
-function toggleTheme() {
-  theme = theme === 'light' ? 'dark' : 'light';
-  localStorage.setItem('theme', theme);
-  applyTheme();
-  showToast(`Tema alterado para ${theme === 'dark' ? 'escuro' : 'claro'}`, 'info');
-}
-
 function applyTheme() {
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
@@ -801,6 +794,7 @@ function applyTheme() {
       lucide.createIcons();
     }
   }
+  showToast(`Tema alterado para ${newTheme === 'dark' ? 'escuro' : 'claro'}`, 'info');
 }
 
 // Navigation
@@ -1629,25 +1623,7 @@ function renderCheckoutPage(container) {
 }
 
 // Event Handlers
-function handleSearch(term) {
-  searchTerm = term;
-  if (currentPage === 'home') {
-    const productsSection = document.getElementById('produtos');
-    if (productsSection) {
-      productsSection.innerHTML = renderFeaturedProducts();
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-    }
-  }
-}
 
-function toggleMobileMenu() {
-  const mobileMenu = document.getElementById('mobile-menu');
-  if (mobileMenu) {
-    mobileMenu.classList.toggle('hidden');
-  }
-}
 
 function closeMobileMenu() {
   const mobileMenu = document.getElementById('mobile-menu');
@@ -1778,44 +1754,6 @@ function toggleFavorite(productId) {
   }
 }
 
-function toggleLogin() {
-  const loginModal = document.getElementById('login-modal');
-  if (loginModal) {
-    loginModal.classList.toggle('hidden');
-  }
-}
-
-function handleLogin(event) {
-  event.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-  
-  // Simulate login
-  currentUser = { 
-    email, 
-    name: email.split('@')[0],
-    joined: new Date().toLocaleDateString('pt-BR'),
-    orders: [],
-    avatar: email.charAt(0).toUpperCase()
-  };
-  
-  // Save to localStorage
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-  showToast(`Bem-vindo, ${currentUser.name}!`, 'success');
-  toggleLogin();
-  updateUserStatus();
-  updateUserPanel();
-}
-
-function handleLogout() {
-  currentUser = null;
-  localStorage.removeItem('currentUser');
-  showToast('Você saiu da sua conta', 'info');
-  updateUserStatus();
-  updateUserPanel();
-  toggleUserPanel(false);
-}
 
 function updateUserStatus() {
   const indicator = document.getElementById('user-status-indicator');
@@ -2441,9 +2379,10 @@ function showToast(message, type = 'info') {
   
   container.appendChild(toast);
   
-  // Trigger reflow and add show class
-  toast.offsetHeight;
-  toast.classList.add('show');
+  // Use a short timeout to allow the element to be added to the DOM before adding the 'show' class
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
   
   // Auto remove after 5 seconds
   setTimeout(() => {
