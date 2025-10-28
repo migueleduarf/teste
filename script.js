@@ -2664,6 +2664,77 @@ function toggleLogin() {
   }
 }
 
+/**
+ * Fecha o menu mobile
+ */
+function closeMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  if (menu) {
+    menu.classList.add('hidden');
+  }
+}
+
+/**
+ * Mostra o painel de registro (alias para showRegisterPanel)
+ */
+function showRegister() {
+  showRegisterPanel();
+}
+
+/**
+ * Processa o login do usuário
+ */
+function handleLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('login-email')?.value;
+  const password = document.getElementById('login-password')?.value;
+  
+  if (!email || !password) {
+    showToast('Por favor, preencha todos os campos', 'error');
+    return;
+  }
+  
+  // Simulate login
+  currentUser = { 
+    email, 
+    name: email.split('@')[0],
+    joined: new Date().toLocaleDateString('pt-BR'),
+    orders: [],
+    avatar: email.charAt(0).toUpperCase()
+  };
+  
+  // Save to localStorage
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+  showToast(`Bem-vindo, ${currentUser.name}!`, 'success');
+  updateUserStatus();
+  updateUserPanel();
+}
+
+/**
+ * Faz logout do usuário
+ */
+function handleLogout() {
+  currentUser = null;
+  localStorage.removeItem('currentUser');
+  showToast('Logout realizado com sucesso!', 'success');
+  updateUserStatus();
+  toggleUserPanel(false);
+}
+
+/**
+ * Processa o checkout
+ */
+function handleCheckout() {
+  if (cartItems.length === 0) {
+    showToast('Seu carrinho está vazio!', 'error');
+    return;
+  }
+  
+  navigateTo('checkout');
+  toggleCart(false);
+}
+
 /* ============================================ */
 /* INICIALIZAÇÃO DO APLICATIVO */
 /* ============================================ */
@@ -2743,6 +2814,17 @@ window.showUserOrders = showUserOrders;
 window.showUserFavorites = showUserFavorites;
 window.showUserSettings = showUserSettings;
 window.showUserAddress = showUserAddress;
+window.showUserHelp = showUserHelp;
+window.showRegisterPanel = showRegisterPanel;
+
+// ===== FUNÇÕES DE NEWSLETTER E SCROLL =====
+window.subscribeNewsletter = subscribeNewsletter;
+window.scrollToProducts = scrollToProducts;
+window.scrollToNewsletter = scrollToNewsletter;
+window.scrollToCategories = scrollToCategories;
+
+// ===== FUNÇÕES AUXILIARES =====
+window.processCheckout = processCheckout;
 
 console.log('✅ TODAS as funções disponibilizadas no escopo global!');
 
