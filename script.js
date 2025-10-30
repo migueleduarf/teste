@@ -693,6 +693,18 @@ function init() {
   console.log('🚀 Iniciando Apple Juice...');
   
   try {
+    // Preenche o objeto SIDEBARS após o DOM ter sido carregado.
+    SIDEBARS = {
+      'cart-sidebar': {
+        sidebar: document.getElementById('cart-sidebar'),
+        overlay: document.getElementById('cart-overlay'),
+      },
+      'user-panel': {
+        sidebar: document.getElementById('user-panel'),
+        overlay: document.getElementById('user-panel-overlay'),
+      }
+    };
+
     // Carrega as configurações e renderiza o conteúdo
     console.log('📋 Carregando tema...');
     loadTheme();
@@ -2471,63 +2483,79 @@ function initializeEventListeners() {
   }
 }
 
+// O objeto SIDEBARS será preenchido na função init(), após o DOM ser carregado.
+let SIDEBARS = {};
+
 /**
- * Alterna a exibição do carrinho de compras (sidebar)
- * @param {boolean} forceState - Se fornecido, força o estado (true = abrir, false = fechar)
+ * Centraliza a lógica de bloqueio de rolagem da página.
+ * Bloqueia o scroll se qualquer painel estiver aberto, e libera se todos estiverem fechados.
  */
-function toggleCart(forceState) {
-  const sidebar = document.getElementById('cart-sidebar');
-  const overlay = document.getElementById('cart-overlay');
-  if (!sidebar || !overlay) return;
-
-  const isOpen = !sidebar.classList.contains('translate-x-full');
-  const shouldOpen = forceState === undefined ? !isOpen : forceState;
-
-  if (shouldOpen) {
-    // Se for para abrir o carrinho, garante que o painel de usuário esteja fechado
-    toggleUserPanel(false);
-    sidebar.classList.remove('translate-x-full');
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  } else {
-    sidebar.classList.add('translate-x-full');
-    overlay.classList.add('hidden');
-    // Só restaura o scroll se o outro painel também estiver fechado
-    const userPanel = document.getElementById('user-panel');
-    if (userPanel && userPanel.classList.contains('translate-x-full')) {
-      document.body.style.overflow = '';
-    }
-  }
+function updateBodyScroll() {
+  const isAnySidebarOpen = Object.values(SIDEBARS).some(
+    ({ sidebar }) => sidebar && !sidebar.classList.contains('translate-x-full')
+  );
+  document.body.style.overflow = isAnySidebarOpen ? 'hidden' : '';
 }
 
 /**
- * Alterna a exibição do painel de usuário (sidebar)
- * @param {boolean} forceState - Se fornecido, força o estado (true = abrir, false = fechar)
+ * Função genérica para abrir e fechar qualquer painel lateral.
+ * Garante que apenas um painel possa estar aberto por vez.
+ *
+ * @param {string} panelId - O ID do painel a ser manipulado (e.g., 'cart-sidebar').
+ * @param {boolean} [forceState] - Força um estado específico (true para abrir, false para fechar).
  */
-function toggleUserPanel(forceState) {
-  const sidebar = document.getElementById('user-panel');
-  const overlay = document.getElementById('user-panel-overlay');
-  if (!sidebar || !overlay) return;
+function toggleSidebar(panelId, forceState) {
+  const target = SIDEBARS[panelId];
+  if (!target || !target.sidebar || !target.overlay) {
+    console.error(`[toggleSidebar] Painel com ID "${panelId}" não encontrado.`);
+    return;
+  }
 
-  const isOpen = !sidebar.classList.contains('translate-x-full');
+  const isOpen = !target.sidebar.classList.contains('translate-x-full');
   const shouldOpen = forceState === undefined ? !isOpen : forceState;
 
+  // Se a intenção é abrir um painel, primeiro fecha todos os outros.
   if (shouldOpen) {
-    // Se for para abrir o painel de usuário, garante que o carrinho esteja fechado
-    toggleCart(false);
-    sidebar.classList.remove('translate-x-full');
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    updateUserPanel();
-  } else {
-    sidebar.classList.add('translate-x-full');
-    overlay.classList.add('hidden');
-    // Só restaura o scroll se o outro painel também estiver fechado
-    const cartSidebar = document.getElementById('cart-sidebar');
-    if (cartSidebar && cartSidebar.classList.contains('translate-x-full')) {
-      document.body.style.overflow = '';
+    for (const id in SIDEBARS) {
+      if (id !== panelId) {
+        const otherPanel = SIDEBARS[id];
+        otherPanel.sidebar.classList.add('translate-x-full');
+        otherPanel.overlay.classList.add('hidden');
+      }
     }
   }
+
+  // Abre ou fecha o painel alvo.
+  if (shouldOpen) {
+    target.sidebar.classList.remove('translate-x-full');
+    target.overlay.classList.remove('hidden');
+    // Caso especial: atualiza o conteúdo do painel de usuário ao abrir.
+    if (panelId === 'user-panel') {
+      updateUserPanel();
+    }
+  } else {
+    target.sidebar.classList.add('translate-x-full');
+    target.overlay.classList.add('hidden');
+  }
+
+  // Atualiza o estado de rolagem da página no final de qualquer operação.
+  updateBodyScroll();
+}
+
+/**
+ * Wrapper para manter compatibilidade com chamadas existentes a toggleCart.
+ * @param {boolean} [forceState] - Opcional. Força o estado do painel.
+ */
+function toggleCart(forceState) {
+  toggleSidebar('cart-sidebar', forceState);
+}
+
+/**
+ * Wrapper para manter compatibilidade com chamadas existentes a toggleUserPanel.
+ * @param {boolean} [forceState] - Opcional. Força o estado do painel.
+ */
+function toggleUserPanel(forceState) {
+  toggleSidebar('user-panel', forceState);
 }
 
 /**
