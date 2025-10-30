@@ -1717,23 +1717,23 @@ function renderCart() {
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
   cartItemsElement.innerHTML = cartItems.map(item => `
-    <div class="flex items-center gap-4 py-4 border-b border-border">
-      <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded" 
+    <div class="sidebar-item">
+      <img src="${item.image}" alt="${item.name}" class="sidebar-item-image"
            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMiAyMFY0NE0yMCAzMkg0NCIgc3Ryb2tlPSIjOUIwMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+'">
       <div class="flex-1">
         <h4 class="font-medium text-foreground">${item.name}</h4>
         <p class="text-sm text-muted-foreground">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
         <div class="flex items-center gap-2 mt-2">
-          <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 rounded bg-muted hover:bg-border flex items-center justify-center">
+          <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="sidebar-item-button">
             <i data-lucide="minus" class="w-4 h-4"></i>
           </button>
           <span class="w-8 text-center">${item.quantity}</span>
-          <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 rounded bg-muted hover:bg-border flex items-center justify-center">
+          <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="sidebar-item-button">
             <i data-lucide="plus" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
-      <button onclick="removeFromCart(${item.id})" class="p-2 text-red-500 hover:bg-red-50 rounded">
+      <button onclick="removeFromCart(${item.id})" class="sidebar-item-button">
         <i data-lucide="trash-2" class="w-4 h-4"></i>
       </button>
     </div>

@@ -801,3 +801,65 @@ input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
     display: none !important;
   }
 }
+
+/* ============================================ */
+/* 30. ESTILOS PERSONALIZADOS PARA OS PAINÉIS LATERAIS */
+/* ============================================ */
+
+/* Estilo base para cada item dentro de um painel lateral */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar-item:hover {
+  background-color: var(--muted);
+}
+
+/* Imagem do produto no painel do carrinho */
+.sidebar-item-image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+/* Botões de ação dentro dos itens do painel (ex: remover, +/-) */
+.sidebar-item-button {
+  padding: 0.5rem;
+  color: var(--muted-foreground);
+  background-color: transparent;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-item-button:hover {
+  background-color: var(--accent);
+  color: var(--primary);
+}
+
+/* Botão de finalização de compra no rodapé do painel */
+.sidebar-footer-button {
+  width: 100%;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.sidebar-footer-button:hover {
+  background-color: var(--primary-darker); /* Você precisará definir esta variável */
+}
+
+/* No tema escuro, podemos escurecer um pouco a cor primária no hover */
+.dark .sidebar-footer-button:hover {
+  background-color: #b91c1c; /* Um tom de vermelho um pouco mais escuro */
+}

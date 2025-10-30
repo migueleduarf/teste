@@ -117,9 +117,9 @@
         <div class="flex flex-col h-full">
             
             <!-- Cabeçalho do Carrinho -->
-            <div class="flex items-center justify-between p-6 border-b border-border">
-                <h2 class="text-lg font-semibold">Carrinho de Compras</h2>
-                <button id="cart-close-button" class="p-2 hover:bg-muted rounded-lg">
+            <div class="flex items-center justify-between p-4 bg-muted border-b border-border">
+                <h2 class="text-lg font-semibold text-primary">Carrinho de Compras</h2>
+                <button id="cart-close-button" class="p-2 text-primary hover:bg-accent rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -130,12 +130,12 @@
             </div>
             
             <!-- Rodapé com Total e Botão de Finalizar -->
-            <div class="border-t border-border p-6">
+            <div class="border-t border-border p-4">
                 <div class="flex justify-between items-center mb-4">
                     <span class="font-semibold">Total:</span>
-                    <span id="cart-total" class="font-bold text-xl text-red-800">R$ 0,00</span>
+                    <span id="cart-total" class="font-bold text-xl text-primary">R$ 0,00</span>
                 </div>
-                <button onclick="navigateTo('checkout')" class="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg transition-colors">
+                <button onclick="navigateTo('checkout')" class="sidebar-footer-button">
                     Finalizar Compra
                 </button>
             </div>
@@ -150,9 +150,9 @@
         <div class="flex flex-col h-full">
             
             <!-- Cabeçalho do Painel de Perfil -->
-            <div class="flex items-center justify-between p-6 border-b border-border">
-                <h2 class="text-lg font-semibold">Meu Perfil</h2>
-                <button id="user-panel-close-button" class="p-2 hover:bg-muted rounded-lg">
+            <div class="flex items-center justify-between p-4 bg-muted border-b border-border">
+                <h2 class="text-lg font-semibold text-primary">Meu Perfil</h2>
+                <button id="user-panel-close-button" class="p-2 text-primary hover:bg-accent rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
