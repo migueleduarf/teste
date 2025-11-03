@@ -113,11 +113,11 @@
     <!-- PAINEL LATERAL DO CARRINHO DE COMPRAS -->
     <!-- ============================================ -->
     <!-- Este painel desliza da direita quando o usuário clica no ícone do carrinho -->
-    <div id="cart-sidebar" class="fixed top-16 bottom-0 right-0 z-50 w-full sm:w-96 bg-background border-l border-border transform translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="cart-sidebar" class="fixed top-16 bottom-0 right-0 z-50 w-full sm:w-96 sidebar-panel transform translate-x-full transition-transform duration-300 ease-in-out">
         <div class="flex flex-col h-full">
             
             <!-- Cabeçalho do Carrinho -->
-            <div class="flex items-center justify-between p-4 bg-muted border-b border-border">
+            <div class="flex items-center justify-between p-4 bg-transparent border-b border-border">
                 <h2 class="text-lg font-semibold text-primary">Carrinho de Compras</h2>
                 <button id="cart-close-button" class="p-2 text-primary hover:bg-accent rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -130,7 +130,7 @@
             </div>
             
             <!-- Rodapé com Total e Botão de Finalizar -->
-            <div class="border-t border-border p-4">
+            <div class="sidebar-footer">
                 <div class="flex justify-between items-center mb-4">
                     <span class="font-semibold">Total:</span>
                     <span id="cart-total" class="font-bold text-xl text-primary">R$ 0,00</span>
@@ -146,11 +146,11 @@
     <!-- PAINEL LATERAL DO PERFIL DO USUÁRIO -->
     <!-- ============================================ -->
     <!-- Este painel desliza da direita quando o usuário clica no ícone de perfil -->
-    <div id="user-panel" class="fixed top-16 bottom-0 right-0 z-50 w-full sm:w-96 bg-background border-l border-border transform translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="user-panel" class="fixed top-16 bottom-0 right-0 z-50 w-full sm:w-96 sidebar-panel transform translate-x-full transition-transform duration-300 ease-in-out">
         <div class="flex flex-col h-full">
             
             <!-- Cabeçalho do Painel de Perfil -->
-            <div class="flex items-center justify-between p-4 bg-muted border-b border-border">
+            <div class="flex items-center justify-between p-4 bg-transparent border-b border-border">
                 <h2 class="text-lg font-semibold text-primary">Meu Perfil</h2>
                 <button id="user-panel-close-button" class="p-2 text-primary hover:bg-accent rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
