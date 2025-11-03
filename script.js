@@ -1719,23 +1719,28 @@ function renderCart() {
   cartItemsElement.innerHTML = cartItems.map(item => `
     <div class="sidebar-item">
       <img src="${item.image}" alt="${item.name}" class="sidebar-item-image"
-           onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMiAyMFY0NE0yMCAzMkg0NCIgc3Ryb2tlPSIjOUIwMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+'">
-      <div class="flex-1">
-        <h4 class="font-medium text-foreground">${item.name}</h4>
-        <p class="text-sm text-muted-foreground">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
-        <div class="flex items-center gap-2 mt-2">
-          <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="sidebar-item-button">
-            <i data-lucide="minus" class="w-4 h-4"></i>
-          </button>
-          <span class="w-8 text-center">${item.quantity}</span>
-          <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="sidebar-item-button">
-            <i data-lucide="plus" class="w-4 h-4"></i>
+           onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNiAyNFY0OE0yNCAzNkg0OCIgc3Ryb2tlPSIjOUIwMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+'">
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-start gap-2">
+          <h4 class="font-semibold text-foreground truncate pr-2">${item.name}</h4>
+          <button onclick="removeFromCart(${item.id})" class="sidebar-item-button hover:bg-red-100 dark:hover:bg-red-900/50">
+            <i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i>
           </button>
         </div>
+        <p class="text-sm text-muted-foreground mt-1">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+        <div class="flex items-center justify-between mt-3">
+          <div class="flex items-center gap-2">
+            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="sidebar-item-button">
+              <i data-lucide="minus" class="w-4 h-4"></i>
+            </button>
+            <span class="w-10 text-center font-medium">${item.quantity}</span>
+            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="sidebar-item-button">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <span class="font-bold text-lg text-primary">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+        </div>
       </div>
-      <button onclick="removeFromCart(${item.id})" class="sidebar-item-button">
-        <i data-lucide="trash-2" class="w-4 h-4"></i>
-      </button>
     </div>
   `).join('');
   
@@ -1784,85 +1789,71 @@ function updateUserStatus() {
 function updateUserPanel() {
   const content = document.getElementById('user-panel-content');
   if (!content) return;
-  
+
   if (currentUser) {
     // User is logged in
     content.innerHTML = `
       <div class="space-y-6">
         <!-- User Profile -->
         <div class="text-center pb-6 border-b border-border">
-          <div class="w-20 h-20 bg-gradient-to-r from-red-600 to-red-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-3xl text-white font-bold">${currentUser.avatar}</span>
+          <div class="w-24 h-24 bg-gradient-to-r from-red-600 to-red-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <span class="text-4xl text-white font-bold">${currentUser.avatar}</span>
           </div>
-          <h3 class="text-xl font-semibold mb-1">${currentUser.name}</h3>
+          <h3 class="text-2xl font-semibold mb-1">${currentUser.name}</h3>
           <p class="text-sm text-muted-foreground">${currentUser.email}</p>
           <p class="text-xs text-muted-foreground mt-2">Membro desde ${currentUser.joined}</p>
         </div>
-        
+
         <!-- Quick Stats -->
         <div class="grid grid-cols-3 gap-4">
-          <div class="text-center p-3 bg-muted rounded-lg">
-            <div class="text-2xl font-bold text-red-800">${currentUser.orders?.length || 0}</div>
-            <div class="text-xs text-muted-foreground">Pedidos</div>
+          <div class="text-center p-4 bg-muted rounded-xl border border-border">
+            <div class="text-3xl font-bold text-primary">${currentUser.orders?.length || 0}</div>
+            <div class="text-xs text-muted-foreground mt-1">Pedidos</div>
           </div>
-          <div class="text-center p-3 bg-muted rounded-lg">
-            <div class="text-2xl font-bold text-red-800">${favorites.length}</div>
-            <div class="text-xs text-muted-foreground">Favoritos</div>
+          <div class="text-center p-4 bg-muted rounded-xl border border-border">
+            <div class="text-3xl font-bold text-primary">${favorites.length}</div>
+            <div class="text-xs text-muted-foreground mt-1">Favoritos</div>
           </div>
-          <div class="text-center p-3 bg-muted rounded-lg">
-            <div class="text-2xl font-bold text-red-800">${cartItems.length}</div>
-            <div class="text-xs text-muted-foreground">Carrinho</div>
+          <div class="text-center p-4 bg-muted rounded-xl border border-border">
+            <div class="text-3xl font-bold text-primary">${cartItems.length}</div>
+            <div class="text-xs text-muted-foreground mt-1">Carrinho</div>
           </div>
         </div>
-        
+
         <!-- Menu Options -->
-        <div class="space-y-2">
-          <button onclick="showUserOrders()" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="package" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Meus Pedidos</span>
+        <div class="space-y-2 pt-4 border-t border-border">
+          <button onclick="showUserOrders()" class="w-full flex items-center justify-between p-4 hover:bg-accent rounded-lg transition-colors">
+            <div class="flex items-center gap-4">
+              <i data-lucide="package" class="w-6 h-6 text-primary"></i>
+              <span class="font-semibold text-lg">Meus Pedidos</span>
             </div>
             <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
           </button>
           
-          <button onclick="showUserFavorites()" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="heart" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Favoritos</span>
+          <button onclick="showUserFavorites()" class="w-full flex items-center justify-between p-4 hover:bg-accent rounded-lg transition-colors">
+            <div class="flex items-center gap-4">
+              <i data-lucide="heart" class="w-6 h-6 text-primary"></i>
+              <span class="font-semibold text-lg">Favoritos</span>
             </div>
             <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
           </button>
           
-          <button onclick="showUserSettings()" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="settings" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Configurações</span>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
-          </button>
-          
-          <button onclick="showUserAddress()" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="map-pin" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Endereços</span>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
-          </button>
-          
-          <button onclick="showUserHelp()" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="help-circle" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Ajuda & Suporte</span>
+          <button onclick="showUserSettings()" class="w-full flex items-center justify-between p-4 hover:bg-accent rounded-lg transition-colors">
+            <div class="flex items-center gap-4">
+              <i data-lucide="settings" class="w-6 h-6 text-primary"></i>
+              <span class="font-semibold text-lg">Configurações</span>
             </div>
             <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
           </button>
         </div>
-        
+
         <!-- Logout Button -->
-        <button onclick="handleLogout()" class="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-          <i data-lucide="log-out" class="w-5 h-5"></i>
-          <span>Sair da Conta</span>
-        </button>
+        <div class="pt-4 border-t border-border">
+          <button onclick="handleLogout()" class="w-full sidebar-footer-button flex items-center justify-center gap-2">
+            <i data-lucide="log-out" class="w-5 h-5"></i>
+            <span>Sair da Conta</span>
+          </button>
+        </div>
       </div>
     `;
   } else {
@@ -1870,25 +1861,25 @@ function updateUserPanel() {
     content.innerHTML = `
       <div class="space-y-6">
         <!-- Login Prompt -->
-        <div class="text-center py-8">
-          <div class="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-            <i data-lucide="user-x" class="w-10 h-10 text-muted-foreground"></i>
+        <div class="text-center pt-8 pb-4">
+          <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
+            <i data-lucide="user-x" class="w-12 h-12 text-muted-foreground"></i>
           </div>
-          <h3 class="text-xl font-semibold mb-2">Você não está logado</h3>
-          <p class="text-sm text-muted-foreground mb-6">Faça login para acessar seu perfil e pedidos</p>
+          <h3 class="text-2xl font-semibold mb-2">Acesse sua Conta</h3>
+          <p class="text-sm text-muted-foreground">Faça login para ter uma experiência completa</p>
         </div>
         
         <!-- Login Form -->
-        <form onsubmit="handleQuickLogin(event)" class="space-y-4">
+        <form onsubmit="handleQuickLogin(event)" class="space-y-4 px-4">
           <div>
             <label class="block text-sm font-medium mb-2">E-mail</label>
-            <input type="email" id="quick-login-email" required class="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-red-800">
+            <input type="email" id="quick-login-email" required class="w-full p-3 border border-border rounded-lg bg-input focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
           <div>
             <label class="block text-sm font-medium mb-2">Senha</label>
-            <input type="password" id="quick-login-password" required class="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-red-800">
+            <input type="password" id="quick-login-password" required class="w-full p-3 border border-border rounded-lg bg-input focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
-          <button type="submit" class="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg transition-colors">
+          <button type="submit" class="w-full sidebar-footer-button">
             Entrar
           </button>
         </form>
@@ -1896,28 +1887,8 @@ function updateUserPanel() {
         <div class="text-center">
           <p class="text-sm text-muted-foreground">
             Não tem conta? 
-            <button onclick="showRegisterPanel()" class="text-red-800 hover:underline font-medium">Registre-se</button>
+            <button onclick="showRegisterPanel()" class="text-primary hover:underline font-semibold">Registre-se</button>
           </p>
-        </div>
-        
-        <!-- Guest Options -->
-        <div class="pt-6 border-t border-border space-y-2">
-          <h4 class="font-medium mb-3">Acessar como visitante</h4>
-          <button onclick="toggleCart(true); toggleUserPanel(false);" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="shopping-cart" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Ver Carrinho</span>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
-          </button>
-          
-          <button onclick="navigateTo('promotions'); toggleUserPanel(false);" class="w-full flex items-center justify-between p-4 bg-muted hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-            <div class="flex items-center gap-3">
-              <i data-lucide="tag" class="w-5 h-5 text-red-800"></i>
-              <span class="font-medium">Ver Promoções</span>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-muted-foreground"></i>
-          </button>
         </div>
       </div>
     `;

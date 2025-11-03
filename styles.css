@@ -57,6 +57,9 @@
   
   /* Raio de borda padrão */
   --radius: 0.625rem;                     /* 10px */
+
+  /* Cor primária mais escura para hover */
+  --primary-darker: #610000; /* Vermelho ainda mais escuro */
 }
 
 /* ============================================ */
@@ -806,12 +809,25 @@ input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
 /* 30. ESTILOS PERSONALIZADOS PARA OS PAINÉIS LATERAIS */
 /* ============================================ */
 
+/* Novo estilo base para os painéis laterais */
+.sidebar-panel {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dark .sidebar-panel {
+  background-color: rgba(10, 10, 10, 0.8); /* Preto profundo com transparência */
+  border-left: 1px solid rgba(220, 38, 38, 0.2); /* Borda vermelha transparente */
+}
+
 /* Estilo base para cada item dentro de um painel lateral */
 .sidebar-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Alinhado ao topo para melhor visualização */
   gap: 1rem;
-  padding: 1rem;
+  padding: 1.25rem 1rem; /* Mais espaçamento vertical */
   border-bottom: 1px solid var(--border);
   transition: background-color 0.2s ease-in-out;
 }
@@ -822,20 +838,26 @@ input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
 
 /* Imagem do produto no painel do carrinho */
 .sidebar-item-image {
-  width: 64px;
-  height: 64px;
+  width: 72px; /* Ligeiramente maior */
+  height: 72px;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem; /* Bordas mais arredondadas */
   border: 1px solid var(--border);
+  flex-shrink: 0; /* Prevenir que a imagem encolha */
 }
 
 /* Botões de ação dentro dos itens do painel (ex: remover, +/-) */
 .sidebar-item-button {
-  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   color: var(--muted-foreground);
-  background-color: transparent;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s, color 0.2s;
+  background-color: var(--accent);
+  border-radius: 9999px; /* Círculo perfeito */
+  transition: all 0.2s;
+  border: 1px solid transparent;
 }
 
 .sidebar-item-button:hover {
@@ -843,23 +865,38 @@ input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
   color: var(--primary);
 }
 
+/* Rodapé do painel */
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.dark .sidebar-footer {
+  background-color: rgba(10, 10, 10, 0.5);
+}
+
 /* Botão de finalização de compra no rodapé do painel */
 .sidebar-footer-button {
   width: 100%;
   background-color: var(--primary);
   color: var(--primary-foreground);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  padding: 1rem; /* Aumentado o padding para um botão mais robusto */
+  border-radius: 0.75rem; /* Bordas mais arredondadas */
+  font-weight: 700; /* Fonte mais forte */
   text-align: center;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.2); /* Sombra sutil */
 }
 
 .sidebar-footer-button:hover {
-  background-color: var(--primary-darker); /* Você precisará definir esta variável */
+  background-color: var(--primary-darker);
+  transform: translateY(-2px); /* Efeito de levantar */
+  box-shadow: 0 6px 20px rgba(139, 0, 0, 0.3);
 }
 
-/* No tema escuro, podemos escurecer um pouco a cor primária no hover */
+/* No tema escuro, o hover é ajustado */
 .dark .sidebar-footer-button:hover {
-  background-color: #b91c1c; /* Um tom de vermelho um pouco mais escuro */
+  background-color: #b91c1c; /* Tom de vermelho mais escuro */
 }
