@@ -13,16 +13,19 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const SECRET = process.env.JWT_SECRET || "applejuice_secret_key";
 
-
+// Configurar conexão com o banco do Render
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } 
+  ssl: { rejectUnauthorized: false } // obrigatório no Render
 });
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
+// ============================
+// CRIAR TABELAS SE NÃO EXISTIREM
+// ============================
 async function initDB() {
   try {
     await pool.query(`
@@ -49,6 +52,11 @@ async function initDB() {
   }
 }
 
+// ============================
+// ROTAS DE USUÁRIO
+// ============================
+
+// Cadastro
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
 
@@ -66,6 +74,7 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+// Login
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -85,6 +94,11 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// ============================
+// ROTAS DE PEDIDOS
+// ============================
+
+// Criar pedido
 app.post("/api/orders/:userId", async (req, res) => {
   const { userId } = req.params;
   const { items, total } = req.body;
@@ -101,6 +115,7 @@ app.post("/api/orders/:userId", async (req, res) => {
   }
 });
 
+// Listar pedidos do usuário
 app.get("/api/orders/:userId", async (req, res) => {
   const { userId } = req.params;
 
@@ -116,7 +131,10 @@ app.get("/api/orders/:userId", async (req, res) => {
   }
 });
 
+// ============================
+// INICIAR SERVIDOR
+// ============================
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   initDB();
-});
+});  
