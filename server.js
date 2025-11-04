@@ -13,19 +13,15 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const SECRET = process.env.JWT_SECRET || "applejuice_secret_key";
 
-// Configurar conexão com o banco do Render
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // obrigatório no Render
+  ssl: { rejectUnauthorized: false }
 });
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-// ============================
-// CRIAR TABELAS SE NÃO EXISTIREM
-// ============================
 async function initDB() {
   try {
     await pool.query(`
@@ -35,7 +31,6 @@ async function initDB() {
         password TEXT NOT NULL
       );
     `);
-
     await pool.query(`
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
@@ -45,21 +40,17 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
-
-    console.log("✅ Tabelas prontas!");
+    console.log("✅ Tabelas criadas!");
   } catch (err) {
     console.error("Erro ao criar tabelas:", err);
   }
 }
 
-// ============================
-// ROTAS DE USUÁRIO
-// ============================
+// ================== ROTAS ==================
 
 // Cadastro
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password)
     return res.status(400).json({ error: "Preencha todos os campos." });
 
@@ -94,10 +85,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// ============================
-// ROTAS DE PEDIDOS
-// ============================
-
 // Criar pedido
 app.post("/api/orders/:userId", async (req, res) => {
   const { userId } = req.params;
@@ -115,10 +102,9 @@ app.post("/api/orders/:userId", async (req, res) => {
   }
 });
 
-// Listar pedidos do usuário
+// Listar pedidos
 app.get("/api/orders/:userId", async (req, res) => {
   const { userId } = req.params;
-
   try {
     const result = await pool.query(
       "SELECT * FROM orders WHERE user_id=$1 ORDER BY created_at DESC",
@@ -131,10 +117,7 @@ app.get("/api/orders/:userId", async (req, res) => {
   }
 });
 
-// ============================
-// INICIAR SERVIDOR
-// ============================
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   initDB();
-});  
+});

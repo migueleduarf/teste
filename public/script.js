@@ -31,7 +31,80 @@ let searchTerm = '';                // Termo de busca digitado pelo usuário
 let selectedCategory = 'Todos';     // Categoria de produtos selecionada
 let currentUser = null;             // Objeto com dados do usuário logado (ou null se não logado)
 let theme = 'light';                // Tema atual ('light' ou 'dark')
-let products = [];                  // Array final de produtos (após aplicar promoções)
+let products = [];     
+let token = localStorage.getItem("token");
+let userId = localStorage.getItem("userId");
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+async function handleLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      token = data.token;
+      userId = data.userId;
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      showToast("Login realizado com sucesso!", "success");
+      loadUserPanel();
+    } else {
+      showToast(data.error || "Erro no login", "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Erro ao conectar com o servidor", "error");
+  }
+}
+
+async function finalizePurchase() {
+  if (!userId) return showToast("Faça login antes de finalizar a compra!", "error");
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  try {
+    const res = await fetch(`/api/orders/${userId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cart, total: total.toFixed(2) }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast("Compra finalizada com sucesso!", "success");
+      cart = [];
+      localStorage.removeItem("cart");
+    } else {
+      showToast(data.error || "Erro ao finalizar compra", "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Erro ao conectar com o servidor", "error");
+  }
+}
+
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.className = `p-3 rounded-lg text-white shadow ${
+    type === "success"
+      ? "bg-green-600"
+      : type === "error"
+      ? "bg-red-600"
+      : "bg-gray-700"
+  }`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+             // Array final de produtos (após aplicar promoções)
 
 /* ============================================ */
 /* 2. BANCO DE DADOS DE PRODUTOS */
