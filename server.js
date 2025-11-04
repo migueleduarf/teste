@@ -1,99 +1,107 @@
-// server.js
-// Backend para e-commerce Apple Juice
-// PostgreSQL + Express + JWT Auth
-
-import express from "express";
-import cors from "cors";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import pkg from "pg";
-const { Pool } = pkg;
-
-dotenv.config();
+// Importar dependências
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const SECRET_KEY = "applejuice_secret_key"; // depois troque por algo mais seguro
+
+// Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.static("public")); // pasta com seu site (HTML, CSS, JS)
 
-// Banco de dados PostgreSQL
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-});
+// Caminhos dos arquivos de dados
+const USERS_FILE = "./data/users.json";
+const ORDERS_FILE = "./data/orders.json";
 
-// Criar tabelas se não existirem
-async function initDB() {
-  await pool.query(`CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-  );`);
-
-  await pool.query(`CREATE TABLE IF NOT EXISTS orders (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    cart JSON NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );`);
-}
-initDB();
-
-// Middleware de autenticação
-function auth(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Token não fornecido" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch {
-    res.status(403).json({ error: "Token inválido" });
-  }
+// Função auxiliar para ler JSON
+function readJSON(file) {
+    if (!fs.existsSync(file)) return [];
+    return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-// Criar conta
-app.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+// Função auxiliar para salvar JSON
+function saveJSON(file, data) {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
 
-  try {
-    const hashed = await bcrypt.hash(password, 10);
-    await pool.query(`INSERT INTO users(email, password) VALUES($1,$2)`, [email, hashed]);
-    res.json({ message: "Usuário criado" });
-  } catch {
-    res.status(400).json({ error: "Email já cadastrado" });
-  }
+//
+// ==============================
+// ROTA DE CADASTRO DE USUÁRIO
+// ==============================
+app.post("/api/register", async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+        return res.status(400).json({ error: "Preencha todos os campos." });
+
+    const users = readJSON(USERS_FILE);
+    const userExists = users.find(u => u.email === email);
+    if (userExists) return res.status(400).json({ error: "E-mail já cadastrado." });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = { id: Date.now(), email, password: hashedPassword, orders: [] };
+    users.push(newUser);
+    saveJSON(USERS_FILE, users);
+
+    res.json({ message: "Usuário cadastrado com sucesso!" });
 });
 
-// Login
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const { rows } = await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
+//
+// ==============================
+// ROTA DE LOGIN
+// ==============================
+app.post("/api/login", async (req, res) => {
+    const { email, password } = req.body;
+    const users = readJSON(USERS_FILE);
+    const user = users.find(u => u.email === email);
 
-  if (!rows.length) return res.status(400).json({ error: "Usuário não encontrado" });
+    if (!user) return res.status(400).json({ error: "Usuário não encontrado." });
 
-  const user = rows[0];
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(400).json({ error: "Senha incorreta" });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(400).json({ error: "Senha incorreta." });
 
-  const token = jwt.sign({ id: user.id, email }, process.env.JWT_SECRET);
-  res.json({ token });
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token });
 });
 
-// Salvar compra
-app.post("/orders", auth, async (req, res) => {
-  const { cart } = req.body;
-  await pool.query(`INSERT INTO orders(user_id, cart) VALUES($1,$2)`, [req.user.id, cart]);
-  res.json({ message: "Compra registrada" });
+//
+// ==============================
+// ROTA PARA PEGAR PEDIDOS DO USUÁRIO
+// ==============================
+app.get("/api/orders/:userId", (req, res) => {
+    const users = readJSON(USERS_FILE);
+    const user = users.find(u => u.id == req.params.userId);
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado." });
+    res.json(user.orders);
 });
 
-// Histórico de compras
-app.get("/orders", auth, async (req, res) => {
-  const { rows } = await pool.query(`SELECT * FROM orders WHERE user_id=$1 ORDER BY created_at DESC`, [req.user.id]);
-  res.json(rows);
+//
+// ==============================
+// ROTA PARA ADICIONAR PEDIDO
+// ==============================
+app.post("/api/orders/:userId", (req, res) => {
+    const { items, total } = req.body;
+    const users = readJSON(USERS_FILE);
+    const userIndex = users.findIndex(u => u.id == req.params.userId);
+    if (userIndex === -1) return res.status(404).json({ error: "Usuário não encontrado." });
+
+    const newOrder = { id: Date.now(), items, total, date: new Date().toISOString() };
+    users[userIndex].orders.push(newOrder);
+    saveJSON(USERS_FILE, users);
+
+    res.json({ message: "Pedido adicionado com sucesso!" });
 });
 
-// Inicializar servidor
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+//
+// ==============================
+// INICIAR SERVIDOR
+// ==============================
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+});
