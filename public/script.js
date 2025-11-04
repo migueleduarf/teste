@@ -56,6 +56,7 @@ async function handleLogin(event) {
       localStorage.setItem("userId", userId);
       showToast("Login realizado com sucesso!", "success");
       loadUserPanel();
+      loadOrders();
     } else {
       showToast(data.error || "Erro no login", "error");
     }
@@ -104,6 +105,51 @@ function showToast(message, type = "info") {
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
+
+async function loadOrders() {
+  if (!userId) return;
+
+  try {
+    const res = await fetch(`/api/orders/${userId}`);
+    const orders = await res.json();
+
+    const ordersContainer = document.getElementById("orders-container");
+    ordersContainer.innerHTML = "";
+
+    if (orders.length === 0) {
+      ordersContainer.innerHTML = "<p>Nenhum pedido encontrado.</p>";
+      return;
+    }
+
+    orders.forEach(order => {
+      const div = document.createElement("div");
+      div.className = "p-4 bg-white rounded shadow mb-4";
+      
+      const items = Array.isArray(order.items)
+        ? order.items
+        : JSON.parse(order.items);
+
+      div.innerHTML = `
+        <p><strong>Pedido #${order.id}</strong> — Total: R$ ${order.total}</p>
+        <p><em>Feito em: ${new Date(order.created_at).toLocaleString()}</em></p>
+        <ul class="mt-2">
+          ${items
+            .map(
+              item =>
+                `<li>${item.name} — ${item.quantity}x — R$ ${(item.price * item.quantity).toFixed(2)}</li>`
+            )
+            .join("")}
+        </ul>
+      `;
+
+      ordersContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error(err);
+    showToast("Erro ao carregar pedidos", "error");
+  }
+}
+
              // Array final de produtos (após aplicar promoções)
 
 /* ============================================ */
@@ -1972,6 +2018,80 @@ function updateUserPanel() {
     lucide.createIcons();
   }
 }
+
+async function showUserOrders() {
+  const content = document.getElementById("user-panel-content");
+  if (!content || !userId) return;
+
+  content.innerHTML = `<p class="text-center mt-6 text-muted-foreground">Carregando seus pedidos...</p>`;
+
+  try {
+    const res = await fetch(`/api/orders/${userId}`);
+    const orders = await res.json();
+
+    if (orders.length === 0) {
+      content.innerHTML = `
+        <div class="text-center mt-8">
+          <i data-lucide="package" class="w-12 h-12 mx-auto text-muted-foreground mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Nenhum pedido encontrado</h3>
+          <p class="text-sm text-muted-foreground">Você ainda não fez nenhuma compra.</p>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    content.innerHTML = `
+      <div class="space-y-6">
+        <button onclick="updateUserPanel()" class="flex items-center gap-2 text-primary hover:underline">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          <span>Voltar</span>
+        </button>
+
+        <h2 class="text-2xl font-semibold">Meus Pedidos</h2>
+
+        <div id="orders-list" class="space-y-4"></div>
+      </div>
+    `;
+
+    const list = document.getElementById("orders-list");
+
+    orders.forEach(order => {
+      const items = Array.isArray(order.items)
+        ? order.items
+        : JSON.parse(order.items);
+
+      const div = document.createElement("div");
+      div.className = "p-4 bg-white rounded-xl border border-border shadow-sm";
+
+      div.innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-semibold">Pedido #${order.id}</h3>
+          <span class="text-sm text-muted-foreground">${new Date(order.created_at).toLocaleDateString()}</span>
+        </div>
+        <ul class="space-y-1 mb-2">
+          ${items
+            .map(
+              item =>
+                `<li class="text-sm">${item.name} — ${item.quantity}x — R$ ${(item.price * item.quantity).toFixed(2)}</li>`
+            )
+            .join("")}
+        </ul>
+        <div class="text-right font-semibold text-primary">
+          Total: R$ ${Number(order.total).toFixed(2)}
+        </div>
+      `;
+
+      list.appendChild(div);
+    });
+
+    lucide.createIcons();
+  } catch (err) {
+    console.error(err);
+    content.innerHTML = `<p class="text-center mt-6 text-red-600">Erro ao carregar pedidos.</p>`;
+  }
+}
+
 
 function handleQuickLogin(event) {
   event.preventDefault();
